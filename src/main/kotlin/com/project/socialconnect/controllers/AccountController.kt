@@ -1,7 +1,7 @@
 package com.project.socialconnect.controllers
 
 import com.project.socialconnect.models.Account
-import com.project.socialconnect.payloads.CreateUserAccountRequestPayload
+import com.project.socialconnect.payloads.account.CreateUserAccountRequestPayload
 import com.project.socialconnect.repositories.AccountRepository
 import com.project.socialconnect.repositories.AccountTypeRepository
 import com.project.socialconnect.repositories.UserRepository
