@@ -85,9 +85,13 @@ compileTestKotlin {
 }
 repositories {
     mavenCentral()
+    jcenter()
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
+def arrow_version = "0.8.2"
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-web')
@@ -98,9 +102,16 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     compile('org.projectlombok:lombok:1.16.8')
     compile('org.json:json:20090211')
-    compile('io.vavr:vavr:1.0.0-alpha-2')
     compile 'com.google.api-client:google-api-client:1.23.0'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
+//    compile 'io.kategory:kategory:0.3.11'
+//    compile "io.arrow-kt:arrow-core-data:$arrow_version"
+//    compile "io.arrow-kt:arrow-syntax:$arrow_version"
+//    compile "io.arrow-kt:arrow-typeclasses:$arrow_version"
+//    compile "io.arrow-kt:arrow-extras:$arrow_version"
+//    compile "io.arrow-kt:arrow-core-extensions:$arrow_version"
+//    compile "io.arrow-kt:arrow-extras-extensions:$arrow_version"
+//    kapt    "io.arrow-kt:arrow-meta:$arrow_version"
 }
 
