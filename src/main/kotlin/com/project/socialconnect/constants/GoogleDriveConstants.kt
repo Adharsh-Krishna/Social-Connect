@@ -8,6 +8,7 @@ abstract class GoogleDriveConstants {
         const val LOCAL_SERVER_PORT: Int = 8888
         const val ACCESS_TYPE = "offline"
         const val USER_ID = "user"
+        const val DEFAULT_FILES_PER_PAGE = 10
     }
 
 }
