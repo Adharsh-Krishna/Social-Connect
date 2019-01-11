@@ -1,7 +1,5 @@
 package com.project.socialconnect.payloads.account
 
-import java.math.BigInteger
-
-data class AccountResponsePayload(val id: BigInteger,
+data class AccountResponsePayload(val id: Long,
                                   val name: String,
-                                  val accountTypeId: BigInteger)
+                                  val accountTypeId: Long)
