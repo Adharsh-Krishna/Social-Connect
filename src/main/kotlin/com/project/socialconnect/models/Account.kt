@@ -1,5 +1,6 @@
 package com.project.socialconnect.models
 
+import com.project.socialconnect.payloads.account.AccountResponsePayload
 import javax.persistence.*
 
 @Entity
@@ -10,13 +11,13 @@ data class Account(
         private var accountType: AccountType?,
 
         @Column(nullable = false, unique = true)
-        private var name: String?,
+        private var name: String,
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private  var id: Long?) {
 
-    constructor(accountType: AccountType?, name: String?)
+    constructor(accountType: AccountType, name: String)
             : this(accountType = accountType, name = name, id = null)
 
     fun getName(): String?  = this.name
@@ -25,5 +26,11 @@ data class Account(
         this.name = name
     }
 
+    fun getId(): Long? = this.id
+
     fun getAccountType(): AccountType? = this.accountType
+
+    fun toAccountResponsePayload(): AccountResponsePayload {
+        return AccountResponsePayload(this.id!!, this.name, this.accountType?.getId()!!)
+    }
 }
