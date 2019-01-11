@@ -33,4 +33,7 @@ data class AccountCredential(
             tokenType = tokenType,
             id = null)
 
+        fun getAccessToken(): String {
+                return this.accessToken
+        }
 }
