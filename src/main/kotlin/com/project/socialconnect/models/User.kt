@@ -21,7 +21,7 @@ class User(
             @GeneratedValue(strategy = GenerationType.IDENTITY)
             private  var id: Long?,
 
-            @OneToMany(cascade = [CascadeType.REMOVE], orphanRemoval = true)
+            @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
             private var accounts: MutableList<Account>?) {
 
 
@@ -70,5 +70,13 @@ class User(
 
     fun toUserResponsePayload(): UserResponsePayload {
         return UserResponsePayload(this.id, this.firstName, this.lastName, this.accounts?.size)
+    }
+
+    fun getAccountById(id: Long): Account? {
+        return this.accounts?.find { account  -> account.getId() == id}
+    }
+
+    fun getAccountByName(name: String): Account? {
+        return this.accounts?.find { account  -> account.getName() == name}
     }
 }
