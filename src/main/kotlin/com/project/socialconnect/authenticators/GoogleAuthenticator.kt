@@ -21,7 +21,7 @@ import java.util.*
 class GoogleAuthenticator: Authenticator {
 
     private val  jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
-    private val scopes: List<String> = Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY)
+    private val scopes: List<String> = Collections.singletonList(DriveScopes.DRIVE)
     private val  httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
     private lateinit var credential: Credential
 
