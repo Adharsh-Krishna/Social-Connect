@@ -1,4 +1,4 @@
 package com.project.socialconnect.payloads.account
 
-class CreateUserAccountRequestPayload(val accountType: Long,
+class CreateUserAccountRequestPayload(val accountTypeId: Long,
                                       val name: String)
