@@ -8,6 +8,7 @@ abstract class ErrorConstants {
         const val ACCOUNT_TYPE_NOT_FOUND = "Account Type could not be found"
         const val ACCOUNT_ALREADY_EXISTS = "Account already exists for this user with the given name"
         const val UNKNOWN_ERROR = "Unknown error"
+        const val ACCOUNT_NOT_FOUND = "Account not found"
     }
 
 }
