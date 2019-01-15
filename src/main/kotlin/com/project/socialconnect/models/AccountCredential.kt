@@ -12,14 +12,14 @@ data class AccountCredential(
         @Column(nullable = false)
         private var accessToken: String,
 
-        @Column(nullable = false)
-        private var refreshToken: String,
+        @Column
+        private var refreshToken: String?,
 
-        @Column(nullable = false)
-        private var expiresIn: Long,
+        @Column
+        private var expiresIn: Long?,
 
-        @Column(nullable = false)
-        private var tokenType: String,
+        @Column
+        private var tokenType: String?,
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,15 @@ data class AccountCredential(
             tokenType = tokenType,
             id = null)
 
+    constructor(account: Account, accessToken: String)
+            : this(account = account,
+            accessToken = accessToken,
+            refreshToken = null,
+            expiresIn = null,
+            tokenType = null,
+            id = null
+            )
+
         fun getAccessToken(): String {
             return this.accessToken
         }
@@ -42,6 +51,6 @@ data class AccountCredential(
         }
 
         fun getRefreshToken(): String {
-            return this.refreshToken
+            return this.refreshToken!!
         }
 }
