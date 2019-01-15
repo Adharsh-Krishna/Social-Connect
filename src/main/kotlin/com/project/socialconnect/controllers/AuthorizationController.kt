@@ -31,9 +31,31 @@ class AuthorizationController(
                         val credential = googleAuthenticator.getCredential()
                         val newAccountCredential = AccountCredential(account.get(), credential.accessToken, credential.refreshToken,
                                 credential.expiresInSeconds, "Bearer")
-                        val accountCredentialAfterSave = accountCredentialRepository.save(newAccountCredential)
-                        ResponseComposer.composeSuccessResponseWith(accountCredentialAfterSave)
+                        accountCredentialRepository.save(newAccountCredential)
+                        ResponseComposer.composeSuccessResponseWith("Authorized successfully")
 
+                    }
+                }
+            }
+        }
+    }
+
+    @GetMapping("/accounts/{accountId}/reauthorize")
+    @ResponseBody
+    fun reAuthorizeAccount(@PathVariable("accountId") accountId: Long): ResponseEntity<Any> {
+        val account = accountRepository.findById(accountId)
+        return when {
+            !account.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_FOUND)
+            else -> {
+                val accountCredential = accountCredentialRepository.findByAccountId(accountId)
+                return when {
+                    !accountCredential.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_AUTHORIZED)
+                    else -> {
+                        googleAuthenticator.reAuthorize(accountCredential.get().getRefreshToken())
+                        val credential = googleAuthenticator.getCredential()
+                        accountCredential.get().setAccessToken(credential.accessToken)
+                        accountCredentialRepository.save(accountCredential.get())
+                        ResponseComposer.composeSuccessResponseWith("Re-authorized successfully ")
                     }
                 }
             }
