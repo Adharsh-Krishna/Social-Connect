@@ -34,6 +34,14 @@ data class AccountCredential(
             id = null)
 
         fun getAccessToken(): String {
-                return this.accessToken
+            return this.accessToken
+        }
+
+        fun setAccessToken(accessToken: String) {
+            this.accessToken = accessToken
+        }
+
+        fun getRefreshToken(): String {
+            return this.refreshToken
         }
 }
