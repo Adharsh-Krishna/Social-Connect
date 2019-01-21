@@ -1,6 +1,8 @@
 package com.project.socialconnect.composers
 
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
 enum class ResponseType {
@@ -26,6 +28,14 @@ interface ResponseComposer {
             return ResponseEntity(
                     ErrorResponse(ResponseType.FAILURE, errorsList),
                     HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+        fun sendFileWithSuccessResponse(fileName: String, mediaType: String, content: ByteArray): ResponseEntity<Any> {
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType(mediaType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = $fileName")
+                    .body(content)
         }
     }
 
