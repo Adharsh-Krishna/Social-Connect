@@ -4,7 +4,7 @@ import com.project.socialconnect.authenticators.Authenticator
 import com.project.socialconnect.authenticators.DropboxAuthenticator
 import com.project.socialconnect.authenticators.GoogleAuthenticator
 
-abstract class AuthenticatorFactory {
+interface AuthenticatorFactory {
 
     companion object {
         private val authenticators: Map<String, Authenticator> = mutableMapOf(
