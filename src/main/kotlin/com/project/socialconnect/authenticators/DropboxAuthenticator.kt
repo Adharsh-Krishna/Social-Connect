@@ -4,11 +4,7 @@ import com.dropbox.core.*
 import com.project.socialconnect.constants.DropboxConstants
 import com.project.socialconnect.models.Account
 import com.project.socialconnect.models.AccountCredential
-import org.mortbay.jetty.Request.getRequest
 import org.springframework.stereotype.Service
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpSession
-
 
 
 @Service
@@ -35,9 +31,6 @@ class DropboxAuthenticator: Authenticator() {
     }
 
     override fun reAuthorizeAndReturnAccountCredential(accountCredential: AccountCredential) {
-    }
-
-    override fun getCredential() {
     }
 
     override fun extractAccountId(state: String): String {
