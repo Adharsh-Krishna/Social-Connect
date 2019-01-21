@@ -12,6 +12,7 @@ abstract class ErrorConstants {
         const val ACCOUNT_ALREADY_AUTHORIZED = "Account has already been authorized"
         const val ACCOUNT_NOT_AUTHORIZED = "Account has not been authorized"
         const val RE_AUTH_NOT_APPLICABLE = "Re auth not applicable"
+        const val FILE_NAME_OR_FILE_ID_MUST_BE_PASSED = "File id/name must be passed as paramater"
     }
 
 }
