@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayOutputStream
 import javax.servlet.http.HttpServletResponse
 
 
@@ -37,7 +36,31 @@ class FileController(private val accountRepository: AccountRepository,
                         ResponseComposer.composeSuccessResponseWith(files)
                     }
                 }
+            }
+        }
+    }
 
+    @GetMapping("/accounts/{accountId}/folders")
+    @ResponseBody
+    fun listFolders(@PathVariable("accountId") accountId: Long,
+                    @RequestParam("folderId") folderId: String? = null,
+                    @RequestParam("folderPath") folderPath: String? = null): ResponseEntity<Any> {
+        val account = accountRepository.findById(accountId)
+        return when {
+            !account.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_FOUND)
+            else -> {
+                val accountCredential = accountCredentialRepository.findByAccountId(accountId)
+                return when {
+                    !accountCredential.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_AUTHORIZED)
+                    else -> {
+                        val accountType = account.get().getAccountType()!!.getName()
+                        val service = CloudServiceFactory.getCloudService(accountType!!)
+                        val accessToken = accountCredential.get().getAccessToken()
+                        service.setCredential(accessToken)
+                        val folders = service.listAllFolders(folderId, folderPath)
+                        ResponseComposer.composeSuccessResponseWith(folders)
+                    }
+                }
             }
         }
     }
@@ -59,7 +82,7 @@ class FileController(private val accountRepository: AccountRepository,
                         val accessToken = accountCredential.get().getAccessToken()
                         val service = CloudServiceFactory.getCloudService(accountType!!)
                         service.setCredential(accessToken)
-                        val newFile = service.createFile(file, fileName)
+                        val newFile = service.uploadFile(file, fileName)
                         ResponseComposer.composeSuccessResponseWith(newFile)
                     }
                 }
@@ -93,6 +116,40 @@ class FileController(private val accountRepository: AccountRepository,
                         val downloadFile = service.downloadFile(fileId = fileId, fileName = fileName)!!
                         val content = downloadFile.toByteArray()!!
                         ResponseComposer.sendFileWithSuccessResponse("hah.txt", "text/plain", content)
+                    }
+                }
+            }
+        }
+    }
+
+
+    @PostMapping("/accounts/files/transfer")
+    @ResponseBody
+    fun transferFile(@RequestParam("senderId") senderAccountId: Long,
+                     @RequestParam("receiverId") receiverAccountId: Long,
+                     @RequestParam("fileId") fileId: String? = null,
+                     @RequestParam("fileName") fileName: String? = null,
+                     @RequestParam("folderPath") folderPath: String? = null,
+                     @RequestParam("folderId") folderId: String? = null): ResponseEntity<Any> {
+        val senderAccount = accountRepository.findById(senderAccountId)
+        val receiverAccount = accountRepository.findById(receiverAccountId)
+        return when {
+            !senderAccount.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_FOUND)
+            !receiverAccount.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_FOUND)
+            fileId.isNullOrBlank() && fileName.isNullOrBlank() -> ResponseComposer.composeErrorResponseWith(ErrorConstants.FILE_NAME_OR_FILE_ID_MUST_BE_PASSED)
+            else -> {
+                val senderAccountCredential = accountCredentialRepository.findByAccountId(senderAccountId)
+                val receiverAccountCredential = accountCredentialRepository.findByAccountId(receiverAccountId)
+                return when {
+                    !senderAccountCredential.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_AUTHORIZED)
+                    !receiverAccountCredential.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_AUTHORIZED)
+                    else -> {
+                        val accountType = senderAccount.get().getAccountType()!!
+                        val service = CloudServiceFactory.getCloudService(accountType.getName()!!)
+                        val accessToken = senderAccountCredential.get().getAccessToken()
+                        service.setCredential(accessToken)
+                        val transferredFile = service.transferTo(receiverAccount.get().getAccountType()!!.getName()!!, receiverAccountCredential.get(), fileId, fileName, folderPath, folderId)!!
+                        ResponseComposer.composeSuccessResponseWith(transferredFile)
                     }
                 }
             }
