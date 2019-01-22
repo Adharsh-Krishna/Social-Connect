@@ -106,6 +106,8 @@ dependencies {
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
     compile 'com.dropbox.core:dropbox-core-sdk:3.0.10'
+    compile 'org.springframework:spring-mock:2.0.8'
+
 //    compile 'io.kategory:kategory:0.3.11'
 //    compile "io.arrow-kt:arrow-core-data:$arrow_version"
 //    compile "io.arrow-kt:arrow-syntax:$arrow_version"
