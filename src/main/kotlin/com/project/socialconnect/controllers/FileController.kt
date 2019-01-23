@@ -5,6 +5,10 @@ import com.project.socialconnect.constants.ErrorConstants
 import com.project.socialconnect.factories.CloudServiceFactory
 import com.project.socialconnect.repositories.AccountCredentialRepository
 import com.project.socialconnect.repositories.AccountRepository
+import com.project.socialconnect.repositories.UserRepository
+import com.project.socialconnect.services.CloudService
+import com.project.socialconnect.services.DropboxService
+import com.project.socialconnect.services.GoogleDriveService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -14,7 +18,8 @@ import javax.servlet.http.HttpServletResponse
 
 @Controller
 class FileController(private val accountRepository: AccountRepository,
-                     private val accountCredentialRepository: AccountCredentialRepository) {
+                     private val accountCredentialRepository: AccountCredentialRepository,
+                     private val userRepository: UserRepository) {
 
     @GetMapping("/accounts/{accountId}/files")
     @ResponseBody
@@ -152,6 +157,21 @@ class FileController(private val accountRepository: AccountRepository,
                         ResponseComposer.composeSuccessResponseWith(transferredFile)
                     }
                 }
+            }
+        }
+    }
+
+
+    @GetMapping("users/{userId}/files")
+    @ResponseBody
+    fun listAllFiles(@PathVariable("userId") userId: Long,
+                     @RequestParam("filesPerAccount") filesPerAccount: Int? = null): ResponseEntity<Any> {
+        val user = userRepository.findById(userId)
+        return when {
+            !user.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.USER_NOT_FOUND)
+            else -> {
+                val files = CloudService.fetchAllFiles(user.get(), accountCredentialRepository, filesPerAccount)
+                ResponseComposer.composeSuccessResponseWith(files)
             }
         }
     }
