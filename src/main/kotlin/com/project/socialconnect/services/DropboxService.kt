@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
-import java.nio.file.Files
-import java.nio.file.Path
 
 
 @Service
@@ -29,9 +27,18 @@ class DropboxService: CloudService() {
         service = DbxClientV2(requestConfig, accessToken)
     }
 
-    override fun listFiles(pageSize: Int): List<Metadata> {
+    override fun listFiles(pageSize: Int?): Any {
         val files = service.files().listFolder("")
-        return files.entries.take(pageSize)
+        if(pageSize == null) {
+            return files
+                    .entries
+                    .filter { it !is FolderMetadata}
+        }
+        return files
+                .entries
+                .asSequence()
+                .filter { it !is FolderMetadata }
+                .take(pageSize).toList()
     }
 
     override fun checkIfFileExists(fileId: String?, fileName: String?): Boolean {
