@@ -13,6 +13,16 @@ abstract class ErrorConstants {
         const val ACCOUNT_NOT_AUTHORIZED = "Account has not been authorized"
         const val RE_AUTH_NOT_APPLICABLE = "Re auth not applicable"
         const val FILE_NAME_OR_FILE_ID_MUST_BE_PASSED = "File id/name must be passed as paramater"
+        const val DROPBOX_FILE_NOT_FOUND = "Dropbox File not found"
+        const val GOOGLE_FILE_NOT_FOUND = "Google File not found"
+        const val COULD_NOT_DOWNLOAD_FILE_FROM_GOOGLE = "Could not download file from Google Drive"
+        const val COULD_NOT_DOWNLOAD_FILE_FROM_DROPBOX = "Could not download file from Dropbox"
+        const val COULD_NOT_UPLOAD_FILE_TO_GOOGLE = "Could not upload file to Google Drive"
+        const val COULD_NOT_UPLOAD_FILE_TO_DROPBOX = "Could not upload file to Dropbox"
+        const val COULD_NOT_DELETE_FILE_FROM_DROPBOX = "Could not delete file from Dropbox"
+        const val COULD_NOT_DELETE_FILE_FROM_GOOGLE = "Could not delete file from Google"
+        const val COULD_NOT_FETCH_FILES = "Could not fetch files"
+        const val COULD_NOT_FETCH_FOLDERS = "Could not fetch folders"
     }
 
 }
