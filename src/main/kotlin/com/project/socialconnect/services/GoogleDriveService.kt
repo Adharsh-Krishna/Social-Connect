@@ -19,6 +19,8 @@ import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 import javax.activation.MimetypesFileTypeMap
 
+const val GOOGLE_FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
+
 @Service
 class GoogleDriveService: CloudService() {
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
@@ -32,18 +34,20 @@ class GoogleDriveService: CloudService() {
                 .build()
     }
 
-    override fun listFiles(pageSize: Int): MutableList<File> {
+    override fun listFiles(pageSize: Int?): MutableList<File> {
         val result: FileList = service.files().list()
                 .setFields("nextPageToken, files(id, name, parents, kind, mimeType)")
-                .setQ("mimeType != 'application/vnd.google-apps.folder'")
-                .setPageSize(pageSize)
+                .setQ("mimeType != '$GOOGLE_FOLDER_MIME_TYPE' and 'root' in parents")
                 .execute()
-        return result.files!!
+        if(pageSize == null) {
+            return result.files!!
+        }
+        return result.files!!.take(pageSize) as MutableList<File>
     }
 
     override fun listAllFolders(folderId: String?, folderPath: String?): Any {
        return  service.files().list()
-                .setQ("mimeType = 'application/vnd.google-apps.folder' and '$folderId' in parents")
+                .setQ("mimeType = '$GOOGLE_FOLDER_MIME_TYPE' and '$folderId' in parents")
                 .execute().files
     }
 
