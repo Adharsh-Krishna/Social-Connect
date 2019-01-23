@@ -7,12 +7,12 @@ import com.project.socialconnect.repositories.AccountCredentialRepository
 import com.project.socialconnect.repositories.AccountRepository
 import com.project.socialconnect.repositories.UserRepository
 import com.project.socialconnect.services.CloudService
-import com.project.socialconnect.services.DropboxService
-import com.project.socialconnect.services.GoogleDriveService
+import kategory.getOrElse
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import javax.activation.MimetypesFileTypeMap
 import javax.servlet.http.HttpServletResponse
 
 
@@ -24,7 +24,7 @@ class FileController(private val accountRepository: AccountRepository,
     @GetMapping("/accounts/{accountId}/files")
     @ResponseBody
     fun listFiles(@PathVariable("accountId") accountId: Long,
-                  @RequestParam("pageSize") pageSize: Int = 10): Any {
+                  @RequestParam("pageSize") pageSize: Int?): Any {
         val account = accountRepository.findById(accountId)
         return when {
             !account.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.ACCOUNT_NOT_FOUND)
@@ -38,6 +38,7 @@ class FileController(private val accountRepository: AccountRepository,
                         val service = CloudServiceFactory.getCloudService(accountType!!)
                         service.setCredential(accessToken)
                         val files = service.listFiles(pageSize)
+                                .getOrElse { throw Exception(ErrorConstants.COULD_NOT_FETCH_FILES + " from " + accountType) }
                         ResponseComposer.composeSuccessResponseWith(files)
                     }
                 }
@@ -63,6 +64,7 @@ class FileController(private val accountRepository: AccountRepository,
                         val accessToken = accountCredential.get().getAccessToken()
                         service.setCredential(accessToken)
                         val folders = service.listAllFolders(folderId, folderPath)
+                                .getOrElse { throw Exception(ErrorConstants.COULD_NOT_FETCH_FOLDERS) }
                         ResponseComposer.composeSuccessResponseWith(folders)
                     }
                 }
@@ -88,6 +90,7 @@ class FileController(private val accountRepository: AccountRepository,
                         val service = CloudServiceFactory.getCloudService(accountType!!)
                         service.setCredential(accessToken)
                         val newFile = service.uploadFile(file, fileName)
+                                .getOrElse { throw Exception(ErrorConstants.COULD_NOT_UPLOAD_FILE_TO_DROPBOX) }
                         ResponseComposer.composeSuccessResponseWith(newFile)
                     }
                 }
@@ -100,7 +103,7 @@ class FileController(private val accountRepository: AccountRepository,
     @ResponseBody
     fun downloadFile(@PathVariable("accountId") accountId: Long,
                      @RequestParam("fileId", required = false) fileId: String?,
-                     @RequestParam("fileName", required = false) fileName: String?,
+                     @RequestParam("fileName") fileName: String?,
                      response: HttpServletResponse): ResponseEntity<Any> {
         val account = accountRepository.findById(accountId)
         return when {
@@ -115,12 +118,13 @@ class FileController(private val accountRepository: AccountRepository,
                         val service = CloudServiceFactory.getCloudService(accountType!!)
                         val accessToken = accountCredential.get().getAccessToken()
                         service.setCredential(accessToken)
-                        if (!service.checkIfFileExists(fileId = fileId, fileName = fileName)) {
-                            return ResponseComposer.composeErrorResponseWith(ErrorConstants.UNKNOWN_ERROR)
-                        }
-                        val downloadFile = service.downloadFile(fileId = fileId, fileName = fileName)!!
-                        val content = downloadFile.toByteArray()!!
-                        ResponseComposer.sendFileWithSuccessResponse("hah.txt", "text/plain", content)
+                        service.getFileDetails(fileId, fileName)
+                                .getOrElse { throw Exception(ErrorConstants.DROPBOX_FILE_NOT_FOUND) }
+                        val downloadedFile = service.downloadFile(fileId, fileName)
+                                .getOrElse { throw Exception(ErrorConstants.COULD_NOT_DOWNLOAD_FILE_FROM_GOOGLE) }
+                        val content = downloadedFile.toByteArray()!!
+                        val mediaType = MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(fileName)!!
+                        ResponseComposer.sendFileWithSuccessResponse(fileName!!, mediaType, content)
                     }
                 }
             }
@@ -153,8 +157,9 @@ class FileController(private val accountRepository: AccountRepository,
                         val service = CloudServiceFactory.getCloudService(accountType.getName()!!)
                         val accessToken = senderAccountCredential.get().getAccessToken()
                         service.setCredential(accessToken)
-                        val transferredFile = service.transferTo(receiverAccount.get().getAccountType()!!.getName()!!, receiverAccountCredential.get(), fileId, fileName, folderPath, folderId)!!
-                        ResponseComposer.composeSuccessResponseWith(transferredFile)
+                        val transferredFile = service.transferTo(receiverAccount.get().getAccountType()!!.getName()!!, receiverAccountCredential.get(), fileId, fileName, folderPath, folderId)
+                                .getOrElse { throw Exception("transfer failed") }
+                        ResponseComposer.composeSuccessResponseWith(transferredFile!!)
                     }
                 }
             }
@@ -171,6 +176,7 @@ class FileController(private val accountRepository: AccountRepository,
             !user.isPresent -> ResponseComposer.composeErrorResponseWith(ErrorConstants.USER_NOT_FOUND)
             else -> {
                 val files = CloudService.fetchAllFiles(user.get(), accountCredentialRepository, filesPerAccount)
+                        .getOrElse { throw Exception(ErrorConstants.UNKNOWN_ERROR) }
                 ResponseComposer.composeSuccessResponseWith(files)
             }
         }
