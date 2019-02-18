@@ -17,6 +17,9 @@ class User(
             @Column(nullable = false, unique = true)
             private val userName: String?,
 
+            @Column(nullable = false)
+            private var password: String?,
+
             @Id
             @GeneratedValue(strategy = GenerationType.IDENTITY)
             private  var id: Long?,
@@ -25,8 +28,8 @@ class User(
             private var accounts: MutableList<Account>?) {
 
 
-    constructor(firstName: String?, lastName: String?, userName: String?)
-            : this(firstName,lastName,userName, null, null)
+    constructor(firstName: String?, lastName: String?, userName: String?, password: String?)
+            : this(firstName,lastName,userName, password, null, null)
 
     fun getId(): Long? {
         return this.id
@@ -78,5 +81,13 @@ class User(
 
     fun getAccountByName(name: String): Account? {
         return this.accounts?.find { account  -> account.getName() == name}
+    }
+
+    fun getPassword(): String? {
+        return this.password
+    }
+
+    fun setPassword(password: String?) {
+        this.password = password
     }
 }
