@@ -1,4 +1,4 @@
-package com.project.socialconnect.auth
+package com.project.socialconnect.security
 
 import com.project.socialconnect.repositories.UserRepository
 import org.springframework.security.core.userdetails.User
