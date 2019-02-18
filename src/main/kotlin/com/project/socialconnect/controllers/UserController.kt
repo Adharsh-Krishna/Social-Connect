@@ -7,9 +7,18 @@ import com.project.socialconnect.repositories.UserRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.mortbay.jetty.security.Password.getPassword
+import org.springframework.web.bind.annotation.RequestBody
+
+
+
+
 
 @Controller
 class UserController(private val userRepository: UserRepository){
+
+    private val bCryptPasswordEncoder: BCryptPasswordEncoder = BCryptPasswordEncoder()
 
     @GetMapping("/users")
     @ResponseBody
@@ -28,14 +37,15 @@ class UserController(private val userRepository: UserRepository){
         }
     }
 
-    @PostMapping("/user")
+    @PostMapping("/users/sign-up")
     @ResponseBody
     fun createUser(@RequestBody user: User): ResponseEntity<Any> {
         val existingUser = userRepository.findByUserName(user.getUserName()!!)
         return when {
             existingUser.isPresent -> ResponseComposer.composeSuccessResponseWith(ErrorConstants.USER_ALREADY_EXISTS_WITH_USER_NAME)
             else -> {
-                val newUser = userRepository.save(User(user.getFirstName(), user.getLastName(), user.getUserName()))
+                val encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword())
+                val newUser = userRepository.save(User(user.getFirstName(), user.getLastName(), user.getUserName(), encryptedPassword))
                 ResponseComposer.composeSuccessResponseWith(newUser)
             }
         }
