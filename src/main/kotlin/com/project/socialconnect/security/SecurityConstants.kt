@@ -1,4 +1,4 @@
-package com.project.socialconnect.auth
+package com.project.socialconnect.security
 
 object SecurityConstants {
     const val SECRET = "SecretKeyToGenJWTs"
