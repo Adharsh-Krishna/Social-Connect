@@ -11,8 +11,9 @@ class UserTest {
         val firstName = "testFirstName"
         val lastName = "testLastName"
         val userName = "testUserName"
+        val password = "123abc"
         val accounts = null
-        val newUser = User(firstName, lastName, userName)
+        val newUser = User(firstName, lastName, userName, password)
         assertEquals(newUser.getAccounts(), accounts)
         assertEquals(newUser.getUserName(), userName)
         assertEquals(newUser.getLastName(), lastName)
