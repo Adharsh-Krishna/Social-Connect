@@ -1,8 +1,8 @@
-package com.project.socialconnect.auth
+package com.project.socialconnect.security
 
-import com.project.socialconnect.auth.SecurityConstants.HEADER_STRING
-import com.project.socialconnect.auth.SecurityConstants.SECRET
-import com.project.socialconnect.auth.SecurityConstants.TOKEN_PREFIX
+import com.project.socialconnect.security.SecurityConstants.HEADER_STRING
+import com.project.socialconnect.security.SecurityConstants.SECRET
+import com.project.socialconnect.security.SecurityConstants.TOKEN_PREFIX
 import java.util.ArrayList
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import io.jsonwebtoken.Jwts
@@ -35,7 +35,6 @@ class JWTAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenti
     private fun getAuthentication(request: HttpServletRequest): UsernamePasswordAuthenticationToken? {
         val token = request.getHeader(HEADER_STRING)
         if (token != null) {
-            // parse the token.
             val user = Jwts.parser()
                     .setSigningKey(SECRET)
                     .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
