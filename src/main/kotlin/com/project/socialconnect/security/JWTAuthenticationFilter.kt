@@ -1,10 +1,10 @@
-package com.project.socialconnect.auth
+package com.project.socialconnect.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.project.socialconnect.auth.SecurityConstants.EXPIRATION_TIME
-import com.project.socialconnect.auth.SecurityConstants.HEADER_STRING
-import com.project.socialconnect.auth.SecurityConstants.SECRET
-import com.project.socialconnect.auth.SecurityConstants.TOKEN_PREFIX
+import com.project.socialconnect.security.SecurityConstants.EXPIRATION_TIME
+import com.project.socialconnect.security.SecurityConstants.HEADER_STRING
+import com.project.socialconnect.security.SecurityConstants.SECRET
+import com.project.socialconnect.security.SecurityConstants.TOKEN_PREFIX
 import com.project.socialconnect.models.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -23,12 +23,8 @@ import javax.servlet.http.HttpServletResponse
 
 class JWTAuthenticationFilter : UsernamePasswordAuthenticationFilter {
 
-
-//    private lateinit var authenticationManager: AuthenticationManager
-
     constructor(authenticationManager: AuthenticationManager) : super() {
         this.authenticationManager = authenticationManager
-//        this.authenticationManager = authenticationManager
     }
 
     @Throws(AuthenticationException::class)
@@ -36,15 +32,13 @@ class JWTAuthenticationFilter : UsernamePasswordAuthenticationFilter {
                                        res: HttpServletResponse): Authentication {
 
         try {
-            val creds = ObjectMapper()
+            val user = ObjectMapper()
                     .readValue(req.inputStream, User::class.java)
-            val userName = creds.getUserName()!!
-            println("-->$creds")
-            println("auth...${this.authenticationManager}")
+            val userName = user.getUserName()!!
             return this.authenticationManager.authenticate(
                     UsernamePasswordAuthenticationToken(
                             userName,
-                            creds.getPassword(),
+                            user.getPassword(),
                             ArrayList<GrantedAuthority>())
             )
         } catch (e: IOException) {
@@ -59,11 +53,9 @@ class JWTAuthenticationFilter : UsernamePasswordAuthenticationFilter {
                                                     chain: FilterChain,
                                                     auth: Authentication) {
 
-        val user = auth.name
-        println("userrrr --- >$user")
-//        val userName = user.getUserName()!!
+        val userName = auth.name
         val token = Jwts.builder()
-                .setSubject(user)
+                .setSubject(userName)
                 .setExpiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact()
