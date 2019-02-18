@@ -1,6 +1,6 @@
-package com.project.socialconnect.auth
+package com.project.socialconnect.security
 
-import com.project.socialconnect.auth.SecurityConstants.SIGN_UP_URL
+import com.project.socialconnect.security.SecurityConstants.SIGN_UP_URL
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
