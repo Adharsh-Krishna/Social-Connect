@@ -9,6 +9,7 @@ import com.project.socialconnect.repositories.UserRepository
 import com.project.socialconnect.services.CloudService
 import kategory.getOrElse
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -22,6 +23,7 @@ class FileController(private val accountRepository: AccountRepository,
                      private val userRepository: UserRepository) {
 
     @GetMapping("/accounts/{accountId}/files")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun listFiles(@PathVariable("accountId") accountId: Long,
                   @RequestParam("pageSize") pageSize: Int?): Any {
@@ -47,6 +49,7 @@ class FileController(private val accountRepository: AccountRepository,
     }
 
     @GetMapping("/accounts/{accountId}/folders")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun listFolders(@PathVariable("accountId") accountId: Long,
                     @RequestParam("folderId") folderId: String? = null,
@@ -73,6 +76,7 @@ class FileController(private val accountRepository: AccountRepository,
     }
 
     @PostMapping("/accounts/{accountId}/files")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun uploadFile(@RequestParam("file") file: MultipartFile,
                    @RequestParam("fileName") fileName: String,
@@ -100,6 +104,7 @@ class FileController(private val accountRepository: AccountRepository,
 
 
     @GetMapping("/accounts/{accountId}/files/download")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun downloadFile(@PathVariable("accountId") accountId: Long,
                      @RequestParam("fileId", required = false) fileId: String?,
@@ -133,6 +138,7 @@ class FileController(private val accountRepository: AccountRepository,
 
 
     @PostMapping("/accounts/files/transfer")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun transferFile(@RequestParam("senderId") senderAccountId: Long,
                      @RequestParam("receiverId") receiverAccountId: Long,
@@ -168,6 +174,7 @@ class FileController(private val accountRepository: AccountRepository,
 
 
     @GetMapping("users/{userId}/files")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun listAllFiles(@PathVariable("userId") userId: Long,
                      @RequestParam("filesPerAccount") filesPerAccount: Int? = null): ResponseEntity<Any> {
