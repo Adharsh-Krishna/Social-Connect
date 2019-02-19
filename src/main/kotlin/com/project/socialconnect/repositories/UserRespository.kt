@@ -13,6 +13,7 @@ import javax.transaction.Transactional
 interface UserRepository : CrudRepository<User, Long> {
 
     fun findByUserName(userName: String): Optional<User>
+    fun existsByUserName(userName: String): Optional<User>
 
     @Transactional
     @Modifying
