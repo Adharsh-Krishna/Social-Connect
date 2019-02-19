@@ -76,8 +76,8 @@ class UserController(private val userRepository: UserRepository,
 
         SecurityContextHolder.getContext().authentication = authentication
 
-        val jwt = jwtProvider.generateJwtToken(authentication)
-        return ResponseEntity.ok(JwtResponse(jwt))
+        val token = jwtProvider.generateJwtToken(authentication)
+        return ResponseComposer.composeSuccessResponseWith(JwtResponse(token))
     }
 
     @PutMapping("/users/{id}")
