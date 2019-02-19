@@ -7,6 +7,7 @@ import com.project.socialconnect.models.AccountCredential
 import com.project.socialconnect.repositories.AccountCredentialRepository
 import com.project.socialconnect.repositories.AccountRepository
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
@@ -17,6 +18,7 @@ class AuthorizationController(
         private val accountRepository: AccountRepository) {
 
     @GetMapping("/accounts/{accountId}/authorize")
+    @PreAuthorize("hasRole('USER')")
     @ResponseBody
     fun authorizeAccount(@PathVariable("accountId") accountId: Long, request: HttpServletRequest): ResponseEntity<Any> {
         val account = accountRepository.findById(accountId)
@@ -40,6 +42,7 @@ class AuthorizationController(
     }
 
     @GetMapping("/accounts/{accountType}/code")
+    @PreAuthorize("hasRole('USER')")
     @ResponseBody
     fun receiveCode(@PathVariable("accountType") accountType: String,
                     @RequestParam("code") code: String,
@@ -65,6 +68,7 @@ class AuthorizationController(
     }
 
     @GetMapping("/accounts/{accountId}/reauthorize")
+    @PreAuthorize("hasRole('USER')")
     @ResponseBody
     fun reAuthorizeAccount(@PathVariable("accountId") accountId: Long): ResponseEntity<Any> {
         val account = accountRepository.findById(accountId)
