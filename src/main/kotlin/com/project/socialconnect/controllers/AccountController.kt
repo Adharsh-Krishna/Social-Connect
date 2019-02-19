@@ -8,6 +8,7 @@ import com.project.socialconnect.repositories.AccountRepository
 import com.project.socialconnect.repositories.AccountTypeRepository
 import com.project.socialconnect.repositories.UserRepository
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
@@ -17,6 +18,7 @@ class AccountController(private val accountRepository: AccountRepository,
                         private val accountTypeRepository: AccountTypeRepository) {
 
     @PostMapping("/users/{userId}/accounts")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun createAccount(@RequestBody account: CreateUserAccountRequestPayload, @PathVariable("userId") userId: Long): ResponseEntity<Any> {
         val accountType = accountTypeRepository.findById(account.accountTypeId)
@@ -40,6 +42,7 @@ class AccountController(private val accountRepository: AccountRepository,
     }
 
     @GetMapping("/users/{userId}/accounts")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun listAccounts(@PathVariable("userId") userId: Long): ResponseEntity<Any> {
         val user = userRepository.findById(userId)
@@ -51,6 +54,7 @@ class AccountController(private val accountRepository: AccountRepository,
     }
 
     @PutMapping("/users/{userId}/accounts/{accountId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun updateAccount(@PathVariable("userId") userId: Long,
                       @PathVariable("accountId") accountId: Long,
@@ -74,6 +78,7 @@ class AccountController(private val accountRepository: AccountRepository,
     }
 
     @DeleteMapping("/users/{userId}/accounts/{accountId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun deleteAccount(@PathVariable("userId") userId: Long,
                       @PathVariable("accountId") accountId: Long): ResponseEntity<Any> {
