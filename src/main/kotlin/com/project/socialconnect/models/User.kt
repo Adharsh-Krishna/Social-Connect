@@ -1,8 +1,12 @@
 package com.project.socialconnect.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.project.socialconnect.payloads.user.UserResponsePayload
 import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
+import java.util.HashSet
+
+
 
 @Entity
 @Table(name = "users")
@@ -18,6 +22,7 @@ class User(
             private val userName: String?,
 
             @Column(nullable = false)
+            @JsonIgnore
             private var password: String?,
 
             @Id
@@ -25,11 +30,18 @@ class User(
             private  var id: Long?,
 
             @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
-            private var accounts: MutableList<Account>?) {
+            private var accounts: MutableList<Account>?,
+
+            @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+            @JoinTable(name = "user_roles",
+                       joinColumns = [JoinColumn(name = "user_id")],
+                       inverseJoinColumns = [JoinColumn(name = "role_id")])
+            private var roles: Set<Role> = HashSet()) {
 
 
-    constructor(firstName: String?, lastName: String?, userName: String?, password: String?)
-            : this(firstName,lastName,userName, password, null, null)
+
+    constructor(firstName: String?, lastName: String?, userName: String?, password: String?, roles: Set<Role>)
+            : this(firstName,lastName,userName, password, null, null, roles)
 
     fun getId(): Long? {
         return this.id
@@ -89,5 +101,13 @@ class User(
 
     fun setPassword(password: String?) {
         this.password = password
+    }
+
+    fun getRoles(): Set<Role> {
+        return this.roles
+    }
+
+    fun setRoles(roles: Set<Role>) {
+        this.roles = roles
     }
 }
